@@ -1,0 +1,234 @@
+<h2><strong>
+        <q-img id="i9yl0m" src="img/straystat_logo.jpeg" width="80px"></q-img><span id="iu7h">StrayStat Dashboard</span>
+    </strong><span id="ixcf"><span id="ip1lj"></span></span></h2>
+<div class="row">
+    <div class="st-col col-12 col-sm st-module">
+        <div class="row">
+            <div class="st-col col-12 col-sm st-module">
+                <h6>Upload Files</h6>
+                <q-uploader id="ixnz" accept=".xlsx" :auto-upload="true" :hide-upload-btn="true" label="Upload files" :max-files="3" :multiple="true" :no-thumbnails="true" :url="'/____/upload/' + channel_"></q-uploader>
+            </div>
+        </div>
+        <div id="i7m6z" class="st-col col-12 col-sm st-module">
+            <q-btn id="itb4s" color="primary" icon="delete_outline" label="Delete Files in Cache" v-on:click="DeleteFilesButton = true"></q-btn>
+        </div>
+    </div>
+    <div class="st-col col-12 col-sm st-module">
+        <h6>Select File to View</h6>
+        <div class="row">
+            <div class="st-col col-12 col-sm st-module">
+                <q-select id="iczaj" label="Select File" :options="upfiles" v-model="selected_file"></q-select>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="st-col col-12 col-sm st-module">
+        <h6>Filter Data by a Date Range</h6>
+        <div class="row">
+            <div class="st-col col-12 col-sm st-module">
+                <div class="st-col col-12 col-sm st-module">
+                    <q-input id="iwdxh" :clearable="false" :filled="true" label="Start date" v-model="selected_start_date">
+                        <q-icon id="ir0is" class="cursor-pointer" name="event">
+                            <q-popup-proxy id="ij03k">
+                                <q-date id="ivhpb" v-model="selected_start_date" mask="YYYY-MM-DD" :no-unset="true" :today-btn="true"></q-date>
+                            </q-popup-proxy>
+                        </q-icon>
+                    </q-input>
+                    <q-input id="ilobx" :clearable="false" :filled="true" label="End date" v-model="selected_end_date">
+                        <q-icon id="ihxzz" class="cursor-pointer" name="event">
+                            <q-popup-proxy id="ierbq">
+                                <q-date id="ilqcv" v-model="selected_end_date" mask="YYYY-MM-DD" :no-unset="true" :today-btn="true"></q-date>
+                            </q-popup-proxy>
+                        </q-icon>
+                    </q-input>
+                </div>
+            </div>
+            <div class="st-col col-12 col-sm st-module">
+                <div class="st-col col-12 col-sm st-module">
+                    <q-table v-model="table_filtered_by_date" id="incg7" :flat="true" :bordered="true" :pagination="raw_data_table_tpagination" :columns="table_filtered_by_date.columns" title="Test Results in Selected Date Range" :data="table_filtered_by_date.data" row-key="__id"></q-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="st-col col-12 col-sm st-module">
+        <h6>Overall LAMP Test Evaluation Metrics</h6>
+        <plotly id="i3pvp" :data="overall_metrics_radar_trace" :layout="overall_metrics_radar_layout"></plotly>
+    </div>
+    <div class="st-col col-12 col-sm st-module">
+        <h6>LAMP Test Evaluation Metrics Heatmap</h6>
+        <plotly id="ijw9c" data="[
+                {
+                type: 'heatmap',
+                z: heatmap_z,
+                x: heatmap_x,
+                y: heatmap_y,
+                }
+            ]" layout="{
+                xaxis: { title: 'Metrics' },
+                yaxis: { title: 'Pathogens' },
+                paper_bgcolor: 'white',
+                plot_bgcolor: 'white',
+                showlegend: false
+            }"></plotly>
+    </div>
+</div>
+<div class="row">
+    <div class="st-col col-12 col-sm st-module">
+        <h6>Overall Test Results by Pathogen</h6>
+        <div class="st-col col-12 col-sm st-module">
+            <q-select id="i35f3" label="Select Pathogen" :options="pathogen_options" v-model="selected_pathogen"></q-select>
+        </div>
+        <div class="st-col col-12 col-sm st-module">
+            <plotly id="imye6" :data="test_results_trace" :layout="test_results_layout"></plotly>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="st-col col-12 col-sm st-module">
+        <h6>LAMP Test Performance Metrics by Pathogen</h6>
+        <plotly id="ievtj" data="[
+                        {
+                            x: pathogens,
+                            y: tp_pathogen,
+                            type: 'bar',
+                            name: 'True Positives',
+                            
+                        },
+                        {
+                            x: pathogens,
+                            y: fp_pathogen,
+                            type: 'bar',
+                            name: 'False Positives',
+                            
+                        },
+                        {
+                            x: pathogens,
+                            y: tn_pathogen,
+                            type: 'bar',
+                            name: 'True Negatives',
+                           
+                        },
+                        {
+                            x: pathogens,
+                            y: fn_pathogen,
+                            type: 'bar',
+                            name: 'False Negatives',
+                           
+                        }
+                    ]" layout="{
+                        
+                        barmode: 'group',
+                        xaxis: { title: 'Pathogen' },
+                        yaxis: { title: 'Count' },
+                        legend: { orientation: 'v' }
+                    }"></plotly>
+    </div>
+    <div class="st-col col-12 col-sm st-module">
+        <q-table v-model="summary_stats_table_by_pathogen" id="incg7-2" :flat="true" :bordered="true" :pagination="raw_data_table_tpagination" :columns="summary_stats_table_by_pathogen.columns" title="LAMP Test Performance Metrics by Pathogen" :data="summary_stats_table_by_pathogen.data" row-key="__id"></q-table>
+    </div>
+</div>
+<div class="row">
+    <div class="st-col col-12 col-sm st-module">
+        <h6>LAMP Test Performance Metrics by District</h6>
+        <plotly id="ievtj-2" data="[
+                        {
+                            x: districts,
+                            y: tp_district,
+                            type: 'bar',
+                            name: 'True Positives',
+
+                        },
+                        {
+                            x: districts,
+                            y: fp_district,
+                            type: 'bar',
+                            name: 'False Positives',
+
+                        },
+                        {
+                            x: districts,
+                            y: tn_district,
+                            type: 'bar',
+                            name: 'True Negatives',
+
+                        },
+                        {
+                            x: districts,
+                            y: fn_district,
+                            type: 'bar',
+                            name: 'False Negatives',
+
+                        }
+                    ]" layout="{
+                       
+                        barmode: 'group',
+                        xaxis: { 
+                            title: 'District', 
+                            type: 'category',
+                        },
+
+                        yaxis: { title: 'Count' },
+                        legend: { orientation: 'v' }
+                    }"></plotly>
+    </div>
+    <div class="st-col col-12 col-sm st-module">
+        <q-table v-model="summary_stats_table_by_district" id="incg7-2-2" :flat="true" :bordered="true" :pagination="raw_data_table_tpagination" :columns="summary_stats_table_by_district.columns" title="LAMP Test Performance Metrics by District" :data="summary_stats_table_by_district.data" row-key="__id"></q-table>
+    </div>
+</div>
+<div class="row">
+    <div class="st-col col-12 col-sm st-module">
+        <h6>LAMP Test Performance Metrics by Pathogen Over time</h6>
+        <plotly id="ipyh1" :data="pathogen_history_line_traces" layout="{
+            grid: { rows: 4, columns: 1, pattern: 'independent' },
+            xaxis: { title: 'Collection Date' },
+            yaxis: { title: 'True Positives' },
+            yaxis2: { title: 'False Positives' },
+            yaxis3: { title: 'True Negatives' },
+            yaxis4: { title: 'False Negatives' },
+            height: 800,
+            showlegend: true
+          }"></plotly>
+    </div>
+</div>
+<div class="row">
+    <div class="st-col col-12 col-sm st-module">
+        <h6>Patient Tracking</h6>
+        <div class="st-col col-12 col-sm st-module">
+            <q-select id="itj9y" label="Select Patient ID" :options="patient_id_options" v-model="selected_patient_id"></q-select>
+        </div>
+        <div class="st-col col-12 col-sm st-module">
+            <q-table v-model="patient_table" id="ie3ag" :flat="true" :bordered="true" :pagination="raw_data_table_tpagination" :columns="patient_table.columns" :data="patient_table.data" row-key="__id"></q-table>
+        </div>
+    </div>
+    <plotly id="ipjbo-2" :data="pie_trace" :layout="pie_layout"></plotly>
+</div>
+<div class="row">
+    <div class="st-col col-12 col-sm st-module">
+        <h6>LAMP Test Performance Metrics History by Patient</h6>
+        <div class="st-col col-12 col-sm st-module">
+            <q-select id="ivfzh" label="Select Patient ID" :options="patient_id_options" v-model="selected_patient_id_history"></q-select>
+        </div>
+        <div class="st-col col-12 col-sm st-module">
+            <plotly id="i9xkl" :data="area_trace_by_patient" :layout="area_layout_by_patient"></plotly>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="st-col col-12 col-sm st-module">
+        <h6>LAMP Test Performance Metrics History by District</h6>
+        <div class="st-col col-12 col-sm st-module">
+            <q-select id="i35f3-2" label="Select District" :options="district_options" v-model="selected_district"></q-select>
+        </div>
+        <div class="st-col col-12 col-sm st-module">
+            <plotly id="imye6-2" :data="area_trace_by_district" :layout="area_layout_by_district"></plotly>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="st-col col-12 col-sm st-module">
+        <q-table v-model="raw_data_table" id="irorl" :flat="true" :bordered="true" :pagination="raw_data_table_tpagination" :columns="raw_data_table.columns" title="Raw Data" :data="raw_data_table.data" row-key="__id"></q-table>
+    </div>
+</div>
